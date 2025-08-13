@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #e2e8f0;
+    padding: 1rem 0;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 210mm; /* A4 width on larger screens */
+    min-height: 297mm;
+    background: white;
+    margin: 1rem auto;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.page {
+    width: 100%;
+    min-height: 100%;
+    padding: 1.5rem; /* Padding for mobile */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.report-header {
+    text-align: center;
+    border-bottom: 2px solid #1e293b;
+    padding-bottom: 1rem;
+}
+
+.report-header .details {
+    display: flex;
+    flex-direction: column; /* Stack on mobile */
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+main {
+    flex-grow: 1;
+    margin-top: 1.5rem;
+}
+
+#report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+#report-table th, #report-table td {
+    border: 1px solid #cbd5e1;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+#report-table thead {
+    background-color: #f1f5f9;
+}
+
+#report-table th {
+    font-weight: 600;
+}
+
+#report-table tfoot td {
+    border: none;
+    padding-top: 1.5rem;
+}
+
+.print-button {
+    position: fixed;
+    bottom: 20px; /* Positioned at the bottom for mobile */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.75rem 1.5rem;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+/* --- Tablet and Desktop Styles --- */
+@media (min-width: 768px) {
+    body {
+        padding: 2rem;
+    }
+    .page {
+        padding: 1in;
+    }
+    .report-header .details {
+        flex-direction: row;
+        justify-content: space-around;
+        font-size: 1.1rem;
+    }
+    #report-table {
+        font-size: 1rem;
+    }
+    .print-button {
+        top: 20px;
+        right: 20px;
+        bottom: auto;
+        left: auto;
+        transform: none;
+    }
+}
+
+
+/* --- Print Styles --- */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0.75in;
+    }
+
+    body {
+        background-color: #fff;
+        padding: 0;
+        margin: 0;
+    }
+    
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    .page-container {
+        width: 100%;
+        min-height: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+    
+    .page {
+        padding: 0;
+    }
+
+    .report-table-header {
+        display: table-header-group;
+    }
+    
+    #report-table tbody tr {
+        page-break-inside: avoid;
+    }
+    
+    #report-table tfoot {
+        display: table-footer-group;
+    }
+
+    .print-button {
+        display: none;
+    }
+}

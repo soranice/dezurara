@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月報</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="report.css">
+</head>
+<body class="bg-slate-200">
+    <div class="page-container">
+        <div class="page">
+            <header class="report-header">
+                <h1 class="text-3xl md:text-4xl font-bold" id="report-title">月 報</h1>
+                <div class="details">
+                    <p><strong>現場名:</strong> <span id="report-siteName"></span></p>
+                    <p><strong>対象年月:</strong> <span id="report-monthYear"></span></p>
+                    <p><strong>作業員:</strong> <span id="report-workerName"></span></p>
+                </div>
+            </header>
+
+            <main>
+                <table id="report-table">
+                    <thead class="report-table-header">
+                        <tr>
+                            <th>日付</th>
+                            <th>曜日</th>
+                            <th>勤務タイプ</th>
+                            <th>詳細</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-body">
+                        <!-- Report rows will be generated here -->
+                    </tbody>
+                    <tfoot id="report-footer">
+                        <!-- Report footer will be generated here -->
+                    </tfoot>
+                </table>
+            </main>
+        </div>
+    </div>
+    <button id="printReportBtn" class="print-button">
+        <i class="fas fa-print mr-2"></i>このレポートを印刷
+    </button>
+    <script src="report.js"></script>
+</body>
+</html>

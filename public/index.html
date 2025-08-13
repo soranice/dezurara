@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出面表 Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased text-slate-800 bg-slate-50">
+
+    <div id="app" class="container mx-auto p-2 md:p-6">
+        
+        <!-- Header Controls -->
+        <header id="controls" class="mb-5 p-4 bg-white rounded-xl shadow-md">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <h1 class="text-3xl font-bold text-slate-800 text-center lg:text-left">出面表 Pro</h1>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+                    <input type="text" id="siteName" value="本社プロジェクト" class="w-full md:w-64 px-3 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <div class="flex items-center justify-center gap-2 bg-slate-100 rounded-lg p-1">
+                        <button id="prevMonth" class="p-2 rounded-md hover:bg-slate-200 transition-colors"><i class="fas fa-chevron-left text-slate-600"></i></button>
+                        <h2 id="currentMonthYear" class="text-lg font-semibold w-36 text-center"></h2>
+                        <button id="nextMonth" class="p-2 rounded-md hover:bg-slate-200 transition-colors"><i class="fas fa-chevron-right text-slate-600"></i></button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center gap-3">
+                    <button id="addWorkerBtn" class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 w-auto">
+                        <i class="fas fa-user-plus mr-2"></i>作業員を追加
+                    </button>
+                    <button id="createInvoiceBtn" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-auto">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i>請求書を作成
+                    </button>
+                    <button id="printButton" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-auto">
+                        <i class="fas fa-print mr-2"></i>印刷する
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Grid Table -->
+        <main id="grid-container" class="w-full overflow-x-auto bg-white rounded-xl shadow-lg print-area">
+            <div id="print-header" class="hidden p-5 border-b-2 border-slate-200">
+                <h1 id="printSiteName" class="text-3xl font-bold text-slate-800"></h1>
+                <h2 id="printMonthYear" class="text-xl text-slate-600 mt-1"></h2>
+            </div>
+            <table id="demenhyo-grid" class="w-full border-collapse">
+                <thead id="grid-header"></thead>
+                <tbody id="grid-body"></tbody>
+                <tfoot id="grid-footer"></tfoot>
+            </table>
+        </main>
+    </div>
+
+    <!-- Modal for adding/editing work entries -->
+    <div id="entryModal" class="modal-container">
+        <div class="modal-content">
+            <div class="p-5 border-b">
+                <h3 class="text-xl font-bold" id="modalTitle">勤務入力</h3>
+                <p id="modalSubtitle" class="text-sm text-slate-500"></p>
+            </div>
+            <div class="p-5">
+                <div class="space-y-4">
+                    <div>
+                        <label for="workType" class="block text-sm font-medium text-slate-700 mb-1">勤務タイプ</label>
+                        <select id="workType" class="w-full p-2 border border-slate-300 rounded-lg">
+                            <option value="regular">定時 (Regular)</option>
+                            <option value="overtime">残業 (Overtime)</option>
+                            <option value="day-off">休日 (Day Off)</option>
+                        </select>
+                    </div>
+                    <div id="overtime-hours-input" class="hidden">
+                        <label for="overtimeHours" class="block text-sm font-medium text-slate-700 mb-1">残業時間</label>
+                        <select id="overtimeHours" class="w-full p-2 border border-slate-300 rounded-lg">
+                            <option value="1">1時間</option><option value="1.5">1.5時間</option><option value="2">2時間</option><option value="2.5">2.5時間</option><option value="3">3時間</option><option value="4">4時間</option><option value="5">5時間</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="entry-list" class="mt-4 max-h-40 overflow-y-auto"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteEntryBtn" class="delete-button"><i class="fas fa-trash-alt mr-2"></i>クリア</button>
+                <div>
+                    <button id="cancelModal" class="cancel-button">閉じる</button>
+                    <button id="saveEntryBtn" class="save-button">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for generating worker report -->
+    <div id="reportModal" class="modal-container">
+        <div class="modal-content">
+            <div class="p-5">
+                <h3 class="text-xl font-bold text-center" id="reportModalWorkerName"></h3>
+                <p class="text-center text-slate-500 mt-2">この作業員の月報を生成しますか？</p>
+            </div>
+            <div class="modal-footer justify-end">
+                <button id="cancelReportModal" class="cancel-button">キャンセル</button>
+                <button id="generateReportBtn" class="save-button ml-2"><i class="fas fa-file-alt mr-2"></i>生成する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding a new worker -->
+    <div id="addWorkerModal" class="modal-container">
+        <div class="modal-content">
+            <div class="p-5 border-b">
+                <h3 class="text-xl font-bold">新しい作業員を追加</h3>
+            </div>
+            <div class="p-5">
+                <label for="newWorkerName" class="block text-sm font-medium text-slate-700 mb-1">作業員の名前</label>
+                <input type="text" id="newWorkerName" class="w-full p-2 border border-slate-300 rounded-lg" placeholder="例：山田 太郎">
+            </div>
+            <div class="modal-footer justify-end">
+                <button id="cancelAddWorkerModal" class="cancel-button">キャンセル</button>
+                <button id="saveNewWorkerBtn" class="save-button ml-2">追加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Invoice Data -->
+    <div id="invoiceModal" class="modal-container">
+        <div class="modal-content max-w-3xl">
+            <div class="p-5 border-b"><h3 class="text-xl font-bold">請求書情報入力</h3></div>
+            <div class="p-5 max-h-[70vh] overflow-y-auto">
+                <div class="space-y-6">
+                    <!-- Client Info -->
+                    <div class="p-4 border rounded-lg">
+                        <h4 class="font-bold mb-3 text-indigo-600">請求先情報 (Cliente)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label for="clientName" class="label">会社名</label><input type="text" id="clientName" class="input" value="株式会社BR"></div>
+                            <div><label for="paymentDueDate" class="label">支払期限</label><input type="date" id="paymentDueDate" class="input"></div>
+                        </div>
+                    </div>
+                    <!-- Your Company Info -->
+                    <div class="p-4 border rounded-lg">
+                        <h4 class="font-bold mb-3 text-indigo-600">自社情報 (Tu Empresa)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label for="myCompanyName" class="label">会社名</label><input type="text" id="myCompanyName" class="input" value="SORANI株式会社"></div>
+                            <div><label for="myCompanyTel" class="label">電話番号</label><input type="text" id="myCompanyTel" class="input" value="080-6898-3506"></div>
+                            <div><label for="myCompanyPostal" class="label">郵便番号</label><input type="text" id="myCompanyPostal" class="input" value="〒259-1219"></div>
+                            <div><label for="myCompanyManager" class="label">担当者</label><input type="text" id="myCompanyManager" class="input" value="ソラニ エステバン"></div>
+                            <div class="md:col-span-2"><label for="myCompanyAddress" class="label">住所</label><input type="text" id="myCompanyAddress" class="input" value="神奈川県平塚市広川91-1"></div>
+                        </div>
+                    </div>
+                     <!-- Bank Info -->
+                    <div class="p-4 border rounded-lg">
+                        <h4 class="font-bold mb-3 text-indigo-600">振込先情報 (Datos Bancarios)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label for="bankName" class="label">銀行名</label><input type="text" id="bankName" class="input" value="三井住友銀行"></div>
+                            <div><label for="branchName" class="label">支店名</label><input type="text" id="branchName" class="input" value="厚木支店"></div>
+                            <div class="md:col-span-2"><label for="accountNumber" class="label">口座番号</label><input type="text" id="accountNumber" class="input" value="普通 0413374"></div>
+                        </div>
+                    </div>
+                     <!-- Pricing Info -->
+                    <div class="p-4 border rounded-lg">
+                        <h4 class="font-bold mb-3 text-indigo-600">単価設定 (Precios)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label for="unitPrice" class="label">人工単価 (Precio por día/hombre)</label><input type="number" id="unitPrice" class="input" value="23000"></div>
+                            <div><label for="overtimeUnitPrice" class="label">残業単価 (Precio por hora extra)</label><input type="number" id="overtimeUnitPrice" class="input" value="3000"></div>
+                        </div>
+                    </div>
+                    <!-- Expenses Info -->
+                    <div class="p-4 border rounded-lg">
+                        <h4 class="font-bold mb-3 text-indigo-600">経費 (Gastos) - (税込)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div><label for="expenseGas" class="label">ガソリン代</label><input type="number" id="expenseGas" class="input" placeholder="0"></div>
+                            <div><label for="expenseTolls" class="label">高速代</label><input type="number" id="expenseTolls" class="input" placeholder="0"></div>
+                            <div><label for="expenseParking" class="label">駐車場代</label><input type="number" id="expenseParking" class="input" placeholder="0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-end">
+                <button id="cancelInvoiceModal" class="cancel-button">キャンセル</button>
+                <button id="generateInvoiceBtn" class="save-button ml-2"><i class="fas fa-file-invoice-dollar mr-2"></i>請求書を生成</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

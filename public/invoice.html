@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>請求書</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="invoice.css">
+</head>
+<body class="bg-slate-200">
+    <div class="page-container">
+        <div class="page">
+            <header class="report-header">
+                <h1 class="text-5xl font-bold">請 求 書</h1>
+            </header>
+            
+            <section class="meta-info">
+                <div class="client-info">
+                    <p class="client-name" id="client-name-header"></p>
+                    <p class="honorific">御中</p>
+                    <p class="mt-4 text-sm">下記の通り、ご請求申し上げます。</p>
+                </div>
+                <div class="my-company-info">
+                    <p class="date">請求日: <span id="invoice-date"></span></p>
+                    <p id="my-company-name" class="font-bold"></p>
+                    <p id="my-company-postal"></p>
+                    <p id="my-company-address"></p>
+                    <p>TEL: <span id="my-company-tel"></span></p>
+                    <p>担当: <span id="my-company-manager"></span></p>
+                </div>
+            </section>
+
+            <section class="payment-info">
+                <div><strong>件名:</strong> <span id="site-name"></span></div>
+                <div><strong>支払期限:</strong> <span id="payment-due-date"></span></div>
+            </section>
+
+            <section class="total-amount">
+                <span>合計金額</span>
+                <span id="total-amount-display"></span>
+            </section>
+
+            <main>
+                <table id="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>摘要</th>
+                            <th>現場名</th>
+                            <th>数量</th>
+                            <th>単位</th>
+                            <th>単価</th>
+                            <th>金額</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-body">
+                        <!-- Invoice line items will be generated here -->
+                    </tbody>
+                    <tfoot id="invoice-footer">
+                        <!-- Totals will be generated here -->
+                    </tfoot>
+                </table>
+            </main>
+
+            <footer class="invoice-footer">
+                <h3 class="font-bold mb-2 text-indigo-700">お振込先</h3>
+                <div class="bank-details">
+                    <p><strong id="bank-name"></strong></p>
+                    <p><span id="branch-name"></span></p>
+                    <p><span id="account-number"></span></p>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <button id="printInvoiceBtn" class="print-button"><i class="fas fa-print mr-2"></i>この請求書を印刷</button>
+    <script src="invoice.js"></script>
+</body>
+</html>
