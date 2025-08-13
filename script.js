@@ -54,6 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const invoiceModal = document.getElementById('invoiceModal');
     const cancelInvoiceModal = document.getElementById('cancelInvoiceModal');
     const generateInvoiceBtn = document.getElementById('generateInvoiceBtn');
+    const invoiceFieldIds = [
+        'clientName', 'paymentDueDate', 'myCompanyName', 'myCompanyTel',
+        'myCompanyPostal', 'myCompanyManager', 'myCompanyAddress', 'bankName',
+        'branchName', 'accountNumber', 'unitPrice', 'overtimeUnitPrice',
+        'expenseGas', 'expenseTolls', 'expenseParking'
+    ];
 
 
     // --- INITIALIZATION ---
@@ -215,6 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
         invoiceModal.addEventListener('click', (e) => e.target === invoiceModal && closeModal(invoiceModal));
         cancelInvoiceModal.addEventListener('click', () => closeModal(invoiceModal));
         generateInvoiceBtn.addEventListener('click', handleGenerateInvoice);
+        invoiceFieldIds.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', saveInvoiceDraft);
+            }
+        });
     }
 
     // --- HANDLER FUNCTIONS ---
@@ -360,15 +372,44 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal(invoiceModal);
     }
 
+    // --- INVOICE DRAFT LOGIC ---
+    function saveInvoiceDraft() {
+        const draftData = {};
+        invoiceFieldIds.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                draftData[id] = input.value;
+            }
+        });
+        localStorage.setItem('demenhyoInvoiceDraft', JSON.stringify(draftData));
+    }
+
+    function loadInvoiceDraft() {
+        const draftDataString = localStorage.getItem('demenhyoInvoiceDraft');
+        if (draftDataString) {
+            const draftData = JSON.parse(draftDataString);
+            invoiceFieldIds.forEach(id => {
+                const input = document.getElementById(id);
+                if (input && draftData[id]) {
+                    input.value = draftData[id];
+                }
+            });
+        }
+    }
+
     // --- MODAL LOGIC ---
     function openModal(modalElement) {
         if (modalElement === addWorkerModal) {
             newWorkerNameInput.value = '';
             setTimeout(() => newWorkerNameInput.focus(), 50);
         } else if (modalElement === invoiceModal) {
-            const today = new Date();
-            const nextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-            document.getElementById('paymentDueDate').value = nextMonth.toISOString().split('T')[0];
+            loadInvoiceDraft();
+            const paymentDueDateInput = document.getElementById('paymentDueDate');
+            if (!paymentDueDateInput.value) {
+                const today = new Date();
+                const nextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+                paymentDueDateInput.value = nextMonth.toISOString().split('T')[0];
+            }
         }
         modalElement.classList.add('visible');
     }
